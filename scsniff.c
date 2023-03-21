@@ -91,7 +91,6 @@ static int transmit_packet(unsigned char *buf, int len)
     if (n < 0)
     {
         perror("ERROR writing to socket");
-        exit(1);
     }
 
     return n;
@@ -123,7 +122,6 @@ static int receive_packet(unsigned char *buf)
     if (n < 0)
     {
         perror("ERROR reading from socket");
-        exit(1);
     }
 
     return n;
