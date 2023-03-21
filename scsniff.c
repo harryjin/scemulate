@@ -298,7 +298,6 @@ int main(int argc, char **argv)
 {
     int portno, n;
     struct sockaddr_in serv_addr, cli_addr;
-    struct hostent *server;
 
     char buffer[256];
 
@@ -368,7 +367,7 @@ int main(int argc, char **argv)
         fprintf(stderr, "Connected Server\n");
 
         bzero(buffer, 256);
-        char *CMDATR = "GETATR";
+        char *CMDATR = "ATR";
         // unsigned char ATR[] = { 0x3B, 0x6F, 0x00, 0x00, 0x00, 0xB8, 0x54, 0x31, 0x10, 0x07, 0x90, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
         unsigned char atr[256], atr_len;
 
@@ -495,6 +494,7 @@ int main(int argc, char **argv)
                 socklen_t size = sizeof (err);
                 int check = getsockopt (sockfd, SOL_SOCKET, SO_ERROR, &err, &size);
                 if (check != 0) {
+                    fprintf(stderr, "\nConnection Error - 1!\n");
                     break;
                 }
             }
@@ -505,6 +505,7 @@ int main(int argc, char **argv)
             socklen_t size = sizeof (err);
             int check = getsockopt (sockfd, SOL_SOCKET, SO_ERROR, &err, &size);
             if (check != 0) {
+                fprintf(stderr, "\nConnection Error - 2!\n");
                 break;
             }            
         }
