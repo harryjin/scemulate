@@ -102,7 +102,7 @@ static int receive_packet(unsigned char *buf)
 
     int n = 0, m = 0;
 
-    for (int i = 0; i < 5; i++)
+    for (int i = 0; i < 10; i++)
     {
         /* Now read server response */
         n = read(sockfd, buffer, 512);
