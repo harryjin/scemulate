@@ -297,7 +297,7 @@ static void log_message(const char *message)
 int main(int argc, char **argv)
 {
     int portno, n;
-    struct sockaddr_in serv_addr;
+    struct sockaddr_in serv_addr, cli_addr;
     struct hostent *server;
 
     char buffer[256];
@@ -493,7 +493,7 @@ int main(int argc, char **argv)
 
                 int err = 0;
                 socklen_t size = sizeof (err);
-                int check = getsockopt (socket_fd, SOL_SOCKET, SO_ERROR, &err, &size);
+                int check = getsockopt (sockfd, SOL_SOCKET, SO_ERROR, &err, &size);
                 if (check != 0) {
                     break;
                 }
@@ -503,7 +503,7 @@ int main(int argc, char **argv)
 
             int err = 0;
             socklen_t size = sizeof (err);
-            int check = getsockopt (socket_fd, SOL_SOCKET, SO_ERROR, &err, &size);
+            int check = getsockopt (sockfd, SOL_SOCKET, SO_ERROR, &err, &size);
             if (check != 0) {
                 break;
             }            
