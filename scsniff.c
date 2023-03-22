@@ -52,6 +52,7 @@ static void usage(char *name)
 static struct session session;
 static int serial;
 
+static bool connected;
 static int server_sockfd;
 static int sockfd;
 socklen_t clilen;
@@ -346,6 +347,7 @@ int main(int argc, char **argv)
 
     while (1)
     {
+        connected = false;
         clilen = sizeof(cli_addr);
         sockfd = accept(server_sockfd, (struct sockaddr *)&cli_addr, &clilen);
         if (sockfd < 0)
@@ -354,6 +356,7 @@ int main(int argc, char **argv)
             continue;
         }
 
+        connected = true;
         /* Now ask for a message from the user, this message
          * will be read by server
          */
@@ -373,7 +376,7 @@ int main(int argc, char **argv)
         bzero(atr, 256);
 
         while(1) {
-            n = read(sockfd, buffer, 255);
+            n = recv(sockfd, buffer, 255, 0);
 
             if (n > 0) {
                 if (strncmp(buffer, CMDATR, 3) == 0) {
@@ -382,12 +385,9 @@ int main(int argc, char **argv)
                     break;
                 }
             }
-            
-            int err = 0;
-            socklen_t size = sizeof (err);
-            int check = getsockopt (sockfd, SOL_SOCKET, SO_ERROR, &err, &size);
-            if (check != 0) {
-                fprintf(stderr, "\nConnection Error - 1!\n");
+
+            if (n == 0) {
+                connected = false;
                 break;
             }
         }
