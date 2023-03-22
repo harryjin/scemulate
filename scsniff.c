@@ -52,7 +52,7 @@ static void usage(char *name)
 static struct session session;
 static int serial;
 
-static bool connected;
+static int connected;
 static int server_sockfd;
 static int sockfd;
 socklen_t clilen;
@@ -347,7 +347,7 @@ int main(int argc, char **argv)
 
     while (1)
     {
-        connected = false;
+        connected = 0;
         clilen = sizeof(cli_addr);
         sockfd = accept(server_sockfd, (struct sockaddr *)&cli_addr, &clilen);
         if (sockfd < 0)
@@ -356,7 +356,7 @@ int main(int argc, char **argv)
             continue;
         }
 
-        connected = true;
+        connected = 1;
         /* Now ask for a message from the user, this message
          * will be read by server
          */
@@ -387,12 +387,12 @@ int main(int argc, char **argv)
             }
 
             if (n == 0) {
-                connected = false;
+                connected = 0;
                 break;
             }
         }
 
-        if (atr_len == 0) {
+        if (atr_len == 0 || connected == 0) {
             continue;
         }
         // unsigned char ATR[] = { 0x3B, 0x6F, 0x00, 0x00, 0x00, 0xB8, 0x54, 0x31, 0x10, 0x07, 0x90, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
