@@ -369,7 +369,7 @@ int main(int argc, char **argv)
         fprintf(stderr, "Waiting ATR for Smart Card ...\n");
 
         char *CMDATR = "ATR";
-        unsigned char atr[256], atr_len;
+        unsigned char atr[256], atr_len = 0;
         bzero(atr, 256);
 
         while(1) {
@@ -379,6 +379,7 @@ int main(int argc, char **argv)
                 if (strncmp(buffer, CMDATR, 3) == 0) {
                     bcopy(buffer + 3, atr, n);
                     atr_len = n - 3;
+                    break;
                 }
             }
             
@@ -391,6 +392,9 @@ int main(int argc, char **argv)
             }
         }
 
+        if (atr_len == 0) {
+            continue;
+        }
         // unsigned char ATR[] = { 0x3B, 0x6F, 0x00, 0x00, 0x00, 0xB8, 0x54, 0x31, 0x10, 0x07, 0x90, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
         fprintf(stderr, "Received ATR %d\n", n);
