@@ -350,8 +350,8 @@ int main(int argc, char **argv)
         sockfd = accept(server_sockfd, (struct sockaddr *)&cli_addr, &clilen);
         if (sockfd < 0)
         {
-            error("ERROR on accept");
-            exit(3);
+            error("ERROR - accept socket\n");
+            continue;
         }
 
         /* Now ask for a message from the user, this message
@@ -362,35 +362,32 @@ int main(int argc, char **argv)
         timeout.tv_usec = 600000;
         setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(struct timeval));
 
-        fprintf(stderr, "Connected Server\n");
+        fprintf(stderr, "Connected Bridge\n");
 
         bzero(buffer, 256);
+    
+        fprintf(stderr, "Waiting ATR for Smart Card ...\n");
+
         char *CMDATR = "ATR";
-        // unsigned char ATR[] = { 0x3B, 0x6F, 0x00, 0x00, 0x00, 0xB8, 0x54, 0x31, 0x10, 0x07, 0x90, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
         unsigned char atr[256], atr_len;
-
-        /* Send message to the server */
-        n = write(sockfd, CMDATR, strlen(CMDATR));
-
-        if (n < 0)
-        {
-            perror("ERROR writing to socket");
-            continue;
-        }
-
-        /* Now read server response */
         bzero(atr, 256);
-        bzero(buffer, 256);
-        n = read(sockfd, buffer, 255);
 
-        if (n < 0)
-        {
-            perror("ERROR reading from socket");
-            continue;
+        while(1) {
+            n = read(sockfd, buffer, 255);
+
+            if (n > 0) {
+                if (strncmp(buffer, CMDATR, 3) == 0) {
+                    bcopy(buffer + 3, atr, n);
+                    atr_len = n - 3;
+                }
+            }
+            
+            if (n < 0) {
+                break;
+            }
         }
 
-        bcopy(buffer, atr, n);
-        atr_len = n;
+        // unsigned char ATR[] = { 0x3B, 0x6F, 0x00, 0x00, 0x00, 0xB8, 0x54, 0x31, 0x10, 0x07, 0x90, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
         fprintf(stderr, "Received ATR %d\n", n);
         for (int i = 0; i < n; i++)
