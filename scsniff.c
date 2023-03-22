@@ -388,6 +388,7 @@ int main(int argc, char **argv)
 
             if (n == 0) {
                 connected = 0;
+                fprintf(stderr, "Disconnected\n");
                 break;
             }
         }
@@ -420,6 +421,13 @@ int main(int argc, char **argv)
                 // Eat noise while reset active.
                 unsigned char c;
                 read(fd, &c, 1);
+
+                n = recv(sockfd, buffer, 255, MSG_DONTWAIT);
+                if (n == 0) {
+                    connected = 0;
+                    fprintf(stderr, "Disconnected\n");
+                    break;
+                }
             }
 
             struct timeval diff;
@@ -493,24 +501,19 @@ int main(int argc, char **argv)
                     break;
                 }
 
-                int err = 0;
-                socklen_t size = sizeof (err);
-                int check = getsockopt (sockfd, SOL_SOCKET, SO_ERROR, &err, &size);
-                if (check != 0) {
-                    fprintf(stderr, "\nConnection Error - 1!\n");
+                if (connected == 0)
+                {
                     break;
                 }
             }
 
             session_reset(&session);
-
-            int err = 0;
-            socklen_t size = sizeof (err);
-            int check = getsockopt (sockfd, SOL_SOCKET, SO_ERROR, &err, &size);
-            if (check != 0) {
-                fprintf(stderr, "\nConnection Error - 2!\n");
+            
+            if (connected == 0)
+            {
+                fprintf(stderr, "\nDisconnected\n===========================\n");
                 break;
-            }            
+            }
         }
     }
 
