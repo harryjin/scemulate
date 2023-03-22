@@ -338,7 +338,7 @@ int main(int argc, char **argv)
 
     if (bind(server_sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
     {
-        error("ERROR on binding");
+        perror("ERROR on binding");
         exit(2);
     }
 
@@ -350,7 +350,7 @@ int main(int argc, char **argv)
         sockfd = accept(server_sockfd, (struct sockaddr *)&cli_addr, &clilen);
         if (sockfd < 0)
         {
-            error("ERROR - accept socket\n");
+            perror("ERROR - accept socket\n");
             continue;
         }
 
@@ -382,7 +382,11 @@ int main(int argc, char **argv)
                 }
             }
             
-            if (n < 0) {
+            int err = 0;
+            socklen_t size = sizeof (err);
+            int check = getsockopt (sockfd, SOL_SOCKET, SO_ERROR, &err, &size);
+            if (check != 0) {
+                fprintf(stderr, "\nConnection Error - 1!\n");
                 break;
             }
         }
